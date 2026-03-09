@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CEEA — Cuestionario de Evaluación del Espectro Autista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ═══════════════════════ RESET & BASE ═══════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  :root {
+    --forest:   #1C4A3E;
+    --deep:     #0F2E26;
+    --sage:     #3A7A6A;
+    --mint:     #7BBFAF;
+    --cream:    #F5F0E8;
+    --warm:     #EDE7D8;
+    --sand:     #D9CEBA;
+    --clay:     #B8A896;
+    --amber:    #C8813A;
+    --gold:     #E8C96A;
+    --rose:     #C0615A;
+    --text:     #1A2820;
+    --muted:    #5A7268;
+    --border:   rgba(28,74,62,0.15);
+    --shadow:   0 8px 40px rgba(15,46,38,0.12);
+    --shadow-lg: 0 20px 80px rgba(15,46,38,0.18);
+  }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ═══════════════════════ BACKGROUND TEXTURE ═══════════════════════ */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 20%, rgba(59,122,106,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 90% 80%, rgba(28,74,62,0.06) 0%, transparent 60%),
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 40px,
+        rgba(28,74,62,0.015) 40px,
+        rgba(28,74,62,0.015) 41px
+      );
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════ LAYOUT ═══════════════════════ */
+  .app {
+    position: relative; z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  /* ═══════════════════════ TOP BAR ═══════════════════════ */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: var(--forest);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-icon svg { width: 20px; height: 20px; fill: var(--cream); }
+  .logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--forest);
+    line-height: 1.1;
+  }
+  .logo-sub { font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 400; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+  .badge-confidential {
+    font-size: 10px; font-weight: 500; letter-spacing: 1px;
+    color: var(--muted); text-transform: uppercase;
+    border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px;
+  }
+
+  /* ═══════════════════════ PROGRESS BAR ═══════════════════════ */
+  .progress-wrap { margin-bottom: 32px; }
+  .progress-info {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .progress-label { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+  .progress-pct { font-size: 13px; font-weight: 600; color: var(--forest); }
+  .progress-bar {
+    height: 4px; background: var(--sand); border-radius: 4px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--sage), var(--mint));
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-steps {
+    display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .step-dot {
+    height: 4px; flex: 1; border-radius: 4px;
+    background: var(--sand); transition: background 0.4s;
+  }
+  .step-dot.done { background: var(--sage); }
+  .step-dot.active { background: var(--mint); }
+
+  /* ═══════════════════════ CARDS ═══════════════════════ */
+  .card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: fadeSlide 0.4s ease both;
+  }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .card-header {
+    background: var(--forest);
+    padding: 32px 36px 28px;
+    position: relative; overflow: hidden;
+  }
+  .card-header::after {
+    content: '';
+    position: absolute; right: -40px; top: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .card-header::before {
+    content: '';
+    position: absolute; right: 40px; bottom: -60px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .section-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--mint); letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px; font-weight: 700;
+    color: white; line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .section-desc {
+    font-size: 14px; font-weight: 300;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.6;
+  }
+  .card-body { padding: 28px 32px 32px; }
+
+  /* ═══════════════════════ SCALE LEGEND ═══════════════════════ */
+  .scale-legend {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 28px; padding: 14px 18px;
+    background: var(--warm); border-radius: 12px;
+    border-left: 3px solid var(--mint);
+  }
+  .scale-item {
+    font-size: 12px; font-weight: 500; color: var(--muted);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .scale-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; border-radius: 6px;
+    font-size: 11px; font-weight: 700; color: white;
+  }
+  .sc0 { background: #9BB8B0; }
+  .sc1 { background: var(--sage); }
+  .sc2 { background: var(--amber); }
+  .sc3 { background: var(--rose); }
+
+  /* ═══════════════════════ QUESTION ITEM ═══════════════════════ */
+  .q-item {
+    margin-bottom: 22px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: var(--warm);
+    border: 1.5px solid transparent;
+    transition: all 0.25s ease;
+  }
+  .q-item:hover { border-color: var(--border); }
+  .q-item.answered { background: rgba(59,122,106,0.06); border-color: rgba(59,122,106,0.2); }
+
+  .q-text {
+    font-size: 15px; font-weight: 400; line-height: 1.6;
+    color: var(--text); margin-bottom: 14px;
+  }
+  .q-num {
+    font-size: 11px; font-weight: 600; color: var(--mint);
+    letter-spacing: 1px; margin-bottom: 6px; display: block;
+    text-transform: uppercase;
+  }
+
+  .scale-options {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  }
+  @media (max-width: 520px) {
+    .scale-options { grid-template-columns: repeat(2, 1fr); }
+    .card-header { padding: 24px 20px 20px; }
+    .card-body { padding: 20px 18px 24px; }
+  }
+
+  .scale-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 6px;
+    border: 1.5px solid var(--sand);
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Jost', sans-serif;
+  }
+  .scale-btn:hover { border-color: var(--sage); transform: translateY(-1px); }
+  .scale-btn .sc-val {
+    font-size: 18px; font-weight: 700;
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text); background: var(--warm);
+    transition: all 0.2s;
+  }
+  .scale-btn .sc-label { font-size: 10px; font-weight: 500; color: var(--muted); text-align: center; line-height: 1.3; }
+
+  .scale-btn.sel-0 { border-color: #9BB8B0; background: rgba(155,184,176,0.1); }
+  .scale-btn.sel-0 .sc-val { background: #9BB8B0; color: white; }
+  .scale-btn.sel-1 { border-color: var(--sage); background: rgba(58,122,106,0.08); }
+  .scale-btn.sel-1 .sc-val { background: var(--sage); color: white; }
+  .scale-btn.sel-2 { border-color: var(--amber); background: rgba(200,129,58,0.08); }
+  .scale-btn.sel-2 .sc-val { background: var(--amber); color: white; }
+  .scale-btn.sel-3 { border-color: var(--rose); background: rgba(192,97,90,0.08); }
+  .scale-btn.sel-3 .sc-val { background: var(--rose); color: white; }
+
+  /* ═══════════════════════ YES / NO TABLE ═══════════════════════ */
+  .yn-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 16px; border-radius: 12px;
+    background: var(--warm); margin-bottom: 10px;
+    border: 1.5px solid transparent; transition: all 0.2s;
+  }
+  .yn-item.answered { background: rgba(59,122,106,0.06); border-color: rgba(59,122,106,0.2); }
+  .yn-text { font-size: 14px; line-height: 1.55; flex: 1; padding-top: 2px; }
+  .yn-btns { display: flex; gap: 8px; flex-shrink: 0; }
+  .yn-btn {
+    padding: 6px 14px; border-radius: 8px; border: 1.5px solid var(--sand);
+    font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer; background: white; transition: all 0.2s; color: var(--text);
+    letter-spacing: 0.5px;
+  }
+  .yn-btn:hover { transform: translateY(-1px); }
+  .yn-btn.yes-sel { background: var(--rose); border-color: var(--rose); color: white; }
+  .yn-btn.no-sel { background: var(--sage); border-color: var(--sage); color: white; }
+
+  /* ═══════════════════════ NAVIGATION ═══════════════════════ */
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 28px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 26px; border-radius: 12px;
+    font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.25s ease;
+    letter-spacing: 0.3px;
+  }
+  .btn-ghost { background: var(--warm); color: var(--forest); }
+  .btn-ghost:hover { background: var(--sand); }
+  .btn-primary {
+    background: var(--forest); color: white;
+    box-shadow: 0 4px 20px rgba(28,74,62,0.3);
+  }
+  .btn-primary:hover { background: var(--sage); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(28,74,62,0.35); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-whatsapp {
+    background: #25D366; color: white;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+    font-size: 15px; padding: 14px 30px;
+  }
+  .btn-whatsapp:hover { background: #1EBD5A; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(37,211,102,0.4); }
+  .btn svg { width: 18px; height: 18px; }
+
+  .unanswered-warn {
+    font-size: 12px; color: var(--rose);
+    display: none; margin-top: 10px; text-align: center; font-weight: 500;
+  }
+  .unanswered-warn.show { display: block; }
+
+  /* ═══════════════════════ INTRO SCREEN ═══════════════════════ */
+  .intro-header {
+    padding: 48px 36px 36px;
+    background: linear-gradient(145deg, var(--deep) 0%, var(--forest) 60%, var(--sage) 100%);
+    border-radius: 20px 20px 0 0;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .intro-header::before {
+    content: '';
+    position: absolute; left: -60px; bottom: -60px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .intro-header::after {
+    content: '';
+    position: absolute; right: -40px; top: -40px;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .hero-badge {
+    display: inline-block; padding: 6px 16px;
+    background: rgba(123,191,175,0.2); border: 1px solid rgba(123,191,175,0.4);
+    border-radius: 20px; font-size: 11px; font-weight: 500; color: var(--mint);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px; font-weight: 700; color: white; line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero-sub {
+    font-size: 15px; font-weight: 300; color: rgba(255,255,255,0.6);
+    line-height: 1.6; max-width: 480px; margin: 0 auto;
+  }
+  .brain-icon {
+    width: 72px; height: 72px; margin: 0 auto 24px;
+    background: rgba(255,255,255,0.1); border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .brain-icon svg { width: 38px; height: 38px; }
+
+  .intro-body { padding: 32px 36px 36px; }
+  .intro-note {
+    background: rgba(200,129,58,0.08);
+    border: 1px solid rgba(200,129,58,0.25);
+    border-left: 3px solid var(--amber);
+    border-radius: 10px; padding: 16px 18px;
+    font-size: 13px; line-height: 1.7; color: var(--text);
+    margin-bottom: 28px;
+  }
+  .intro-note strong { color: var(--amber); }
+
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 520px) { .fields-grid { grid-template-columns: 1fr; } }
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .field-input {
+    padding: 11px 14px; border-radius: 10px;
+    border: 1.5px solid var(--sand); background: var(--warm);
+    font-family: 'Jost', sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: border 0.2s;
+  }
+  .field-input:focus { border-color: var(--sage); background: white; }
+  .field-input::placeholder { color: var(--clay); }
+
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-option {
+    display: flex; align-items: center; gap: 7px;
+    padding: 9px 14px; border-radius: 10px;
+    border: 1.5px solid var(--sand); background: var(--warm);
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    transition: all 0.2s; user-select: none;
+  }
+  .radio-option input { display: none; }
+  .radio-option.selected { border-color: var(--sage); background: rgba(59,122,106,0.08); color: var(--forest); }
+  .radio-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid var(--sand); transition: all 0.2s; flex-shrink: 0;
+  }
+  .radio-option.selected .radio-dot { background: var(--sage); border-color: var(--sage); }
+
+  .timing-info {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    padding: 16px 20px; background: var(--warm); border-radius: 12px;
+    margin-bottom: 24px;
+  }
+  .timing-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .timing-item svg { width: 16px; height: 16px; stroke: var(--sage); fill: none; stroke-width: 2; }
+
+  /* ═══════════════════════ RESULTS SCREEN ═══════════════════════ */
+  .results-header {
+    padding: 40px 36px 32px;
+    background: linear-gradient(145deg, var(--deep), var(--forest));
+    border-radius: 20px 20px 0 0; text-align: center;
+  }
+  .result-circle {
+    width: 110px; height: 110px; border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.2);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 0 auto 20px; background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+  }
+  .result-score { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 700; color: white; line-height: 1; }
+  .result-max { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 400; }
+  .result-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: white; margin-bottom: 8px; }
+  .result-level {
+    display: inline-block; padding: 6px 18px; border-radius: 20px;
+    font-size: 13px; font-weight: 600; margin-bottom: 12px;
+  }
+  .result-desc { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; max-width: 460px; margin: 0 auto; }
+
+  .results-body { padding: 28px 32px 32px; }
+  .section-bars { margin-bottom: 28px; }
+  .sec-bar-item { margin-bottom: 14px; }
+  .sec-bar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .sec-bar-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .sec-bar-val { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .sec-bar-track { height: 6px; background: var(--sand); border-radius: 6px; overflow: hidden; }
+  .sec-bar-fill { height: 100%; border-radius: 6px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+
+  .flags-section { margin-bottom: 24px; }
+  .flags-title { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .flag-chip {
+    display: inline-block; padding: 5px 12px;
+    background: rgba(192,97,90,0.1); border: 1px solid rgba(192,97,90,0.25);
+    border-radius: 20px; font-size: 12px; color: var(--rose);
+    margin: 4px; font-weight: 500;
+  }
+  .no-flags { font-size: 13px; color: var(--sage); background: rgba(59,122,106,0.08); padding: 10px 16px; border-radius: 10px; }
+
+  .disclaimer-box {
+    background: var(--warm); border-radius: 12px; padding: 16px 18px;
+    font-size: 12px; line-height: 1.7; color: var(--muted);
+    margin-bottom: 24px; border-left: 3px solid var(--sand);
+  }
+  .results-actions { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  .btn-restart { background: var(--warm); color: var(--muted); font-size: 13px; padding: 10px 20px; border-radius: 10px; }
+  .btn-restart:hover { color: var(--forest); background: var(--sand); }
+
+  /* ═══════════════════════ HIDDEN ═══════════════════════ */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ═══════════════════════ SCROLLBAR ═══════════════════════ */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--warm); }
+  ::-webkit-scrollbar-thumb { background: var(--sage); border-radius: 6px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C9 2 6 4.5 6 8c0 2 1 3.8 2.5 5L8 17h8l-.5-4C17 11.8 18 10 18 8c0-3.5-3-6-6-6zm-2 18h4v2h-4v-2z"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">CEEA</div>
+        <div class="logo-sub">Evaluación del Espectro Autista</div>
+      </div>
+    </div>
+    <span class="badge-confidential">🔒 Confidencial</span>
+  </div>
+
+  <!-- PROGRESS BAR (hidden on intro/results) -->
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-info">
+      <span class="progress-label" id="progressLabel">Sección 1 de 9</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-steps" id="progressSteps"></div>
+  </div>
+
+  <!-- ════════════════════ SCREEN: INTRO ════════════════════ -->
+  <div class="screen active" id="screenIntro">
+    <div class="card">
+      <div class="intro-header">
+        <div class="brain-icon">
+          <svg viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+            <path d="M24 6c-6 0-10 4-10 9 0 2 .8 4 2 5.5L14 36h20l-2-15.5C33.2 19 34 17 34 15c0-5-4-9-10-9z"/>
+            <path d="M20 36v6M28 36v6M17 42h14"/>
+            <path d="M14 20c-3 1-5 3.5-5 7 0 3 2 5.5 4.5 6.5"/>
+            <path d="M34 20c3 1 5 3.5 5 7 0 3-2 5.5-4.5 6.5"/>
+          </svg>
+        </div>
+        <div class="hero-badge">Herramienta clínica · Versión paciente</div>
+        <h1 class="hero-title">Cuestionario de<br>Evaluación del<br>Espectro Autista</h1>
+        <p class="hero-sub">Una evaluación cuidadosa basada en criterios internacionales para ayudar a comprender mejor tu experiencia</p>
+      </div>
+      <div class="intro-body">
+        <div class="intro-note">
+          <strong>⚠ Aviso importante:</strong> Este cuestionario es una herramienta de <strong>tamizaje orientativo</strong>. Los resultados serán enviados a tu profesional de salud para su análisis. No constituye un diagnóstico definitivo; solo un especialista calificado puede realizar un diagnóstico formal de TEA.
+        </div>
+        <div class="timing-info">
+          <div class="timing-item">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            15–20 minutos
+          </div>
+          <div class="timing-item">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            68 preguntas
+          </div>
+          <div class="timing-item">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Datos seguros
+          </div>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field-group">
+            <label class="field-label">Nombre completo *</label>
+            <input class="field-input" id="patientName" type="text" placeholder="Tu nombre y apellido" autocomplete="name"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Edad *</label>
+            <input class="field-input" id="patientAge" type="number" placeholder="Ej: 28" min="5" max="99"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Género</label>
+            <div class="radio-group" id="genderGroup">
+              <label class="radio-option" onclick="selectRadio('genderGroup',this,'Masculino')">
+                <input type="radio" name="gender" value="Masculino"/>
+                <span class="radio-dot"></span> Masculino
+              </label>
+              <label class="radio-option" onclick="selectRadio('genderGroup',this,'Femenino')">
+                <input type="radio" name="gender" value="Femenino"/>
+                <span class="radio-dot"></span> Femenino
+              </label>
+              <label class="radio-option" onclick="selectRadio('genderGroup',this,'Otro')">
+                <input type="radio" name="gender" value="Otro"/>
+                <span class="radio-dot"></span> Otro
+              </label>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Informante</label>
+            <div class="radio-group" id="informantGroup">
+              <label class="radio-option selected" onclick="selectRadio('informantGroup',this,'Yo mismo/a')">
+                <input type="radio" name="informant" value="Yo mismo/a" checked/>
+                <span class="radio-dot" style="background:var(--sage);border-color:var(--sage)"></span> Yo mismo/a
+              </label>
+              <label class="radio-option" onclick="selectRadio('informantGroup',this,'Familiar/cuidador')">
+                <input type="radio" name="informant" value="Familiar/cuidador"/>
+                <span class="radio-dot"></span> Familiar/cuidador
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div id="introError" style="color:var(--rose);font-size:13px;margin-bottom:12px;display:none">
+          ⚠ Por favor, completá tu nombre y edad antes de continuar.
+        </div>
+
+        <div class="nav-row" style="border:none;padding:0;margin-top:20px;justify-content:flex-end">
+          <button class="btn btn-primary" onclick="startQuestionnaire()">
+            Comenzar evaluación
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SCREEN: QUESTIONS ════════════════════ -->
+  <div class="screen" id="screenQuestions">
+    <div class="card" id="questionCard"></div>
+    <div class="unanswered-warn" id="unansweredWarn">
+      ⚠ Por favor, respondé todas las preguntas antes de continuar.
+    </div>
+  </div>
+
+  <!-- ════════════════════ SCREEN: RESULTS ════════════════════ -->
+  <div class="screen" id="screenResults">
+    <div class="card" id="resultsCard"></div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA — SECTIONS & QUESTIONS
+═══════════════════════════════════════════ */
+const SECTIONS = [
+  {
+    id: "A", title: "Comunicación Social", subtitle: "Cómo me comunico e interactúo con los demás",
+    scale: "freq",
+    questions: [
+      "Me cuesta iniciar conversaciones con personas que no conozco bien.",
+      "Tengo dificultades para mantener el hilo de una conversación (no sé cuándo hablar o cuando escuchar).",
+      "No noto fácilmente cuando alguien quiere terminar una conversación o cambiar de tema.",
+      "Me resulta difícil entender metáforas, ironías, bromas o el sarcasmo.",
+      "Evito el contacto visual durante las conversaciones o me resulta incómodo.",
+      "Mi tono de voz o forma de hablar le resulta extraña a los demás.",
+      "Tengo dificultades para adaptar mi forma de comunicarme según con quién hablo.",
+      "Me cuesta entender o usar gestos para comunicarme (señalar, asentir, encogerme de hombros).",
+    ]
+  },
+  {
+    id: "B", title: "Reciprocidad Socioemocional", subtitle: "Cómo percibo y comparto las emociones",
+    scale: "freq",
+    questions: [
+      "Me cuesta reconocer o interpretar las emociones de otras personas.",
+      "No me doy cuenta de que alguien está triste o enojado a menos que me lo digan.",
+      "Tengo dificultad para ponerme en el lugar del otro (entender su perspectiva).",
+      "Mis expresiones faciales no siempre coinciden con lo que siento o con la situación.",
+      "Me resulta difícil distinguir entre amigos, conocidos y desconocidos en lo social.",
+      "No suelo compartir mis emociones o sentimientos internos de manera espontánea.",
+      "Me cuesta manejar mis emociones en situaciones sociales.",
+    ]
+  },
+  {
+    id: "C", title: "Conductas Repetitivas", subtitle: "Rutinas, patrones y comportamientos repetitivos",
+    scale: "freq",
+    questions: [
+      "Repito frases, palabras o sonidos sin un propósito comunicativo claro.",
+      "Ordeno o acomodo objetos de forma muy precisa y me molesta si alguien los mueve.",
+      "Tengo un malestar intenso cuando cambian mis rutinas o algo no sale como lo planeé.",
+      "Tengo movimientos corporales repetitivos: aleteo de manos, balanceo, giro, saltar en el lugar.",
+      "Me apego a objetos específicos que llevo siempre o de los que me cuesta separarme.",
+      "Tengo un interés muy intenso y absorbente en uno o pocos temas específicos.",
+      "Hablo sobre mis temas de interés sin notar el desinterés del otro.",
+      "Reacciono de forma muy intensa cuando algo no ocurre como esperaba.",
+    ]
+  },
+  {
+    id: "D", title: "Procesamiento Sensorial", subtitle: "Cómo experimento los estímulos del entorno",
+    scale: "diff",
+    questions: [
+      "Ciertos sonidos cotidianos (aspiradoras, multitudes, sirenas) me causan malestar intenso.",
+      "No tolero ciertas texturas de ropa, etiquetas o el contacto físico inesperado.",
+      "Las luces fluorescentes, destellos o entornos visualmente recargados me molestan.",
+      "Reacciono de forma intensa a olores que los demás no perciben como molestos.",
+      "Rechace o rechazo alimentos por su textura, temperatura o sabor específico.",
+      "No reacciono o reacciono poco al dolor en comparación con los demás.",
+      "Siento atracción o necesidad de tocar superficies, oler objetos o buscar sensaciones físicas.",
+      "Me siento abrumado/a en lugares con mucha estimulación (supermercados, fiestas, aulas ruidosas).",
+    ]
+  },
+  {
+    id: "E", title: "Funciones Ejecutivas", subtitle: "Planificación, organización y flexibilidad mental",
+    scale: "freq",
+    questions: [
+      "Tengo dificultades para planificar y organizar tareas que tienen varios pasos.",
+      "Me cuesta empezar una tarea aunque sepa cómo hacerla.",
+      "Tengo dificultades para cambiar de una actividad a otra o adaptar mis ideas.",
+      "Me enfoco tanto en los detalles que pierdo la visión general de las cosas.",
+      "Me bloqueo ante situaciones imprevistas o cuando hay muchas opciones para elegir.",
+      "Me absorbo completamente en una actividad y no puedo interrumpirla con facilidad.",
+      "Tengo dificultades para priorizar entre diferentes tareas o responsabilidades.",
+    ]
+  },
+  {
+    id: "F", title: "Lenguaje y Comunicación", subtitle: "Mi forma de expresarme verbalmente",
+    scale: "freq",
+    questions: [
+      "Uso un vocabulario muy formal o poco habitual para mi edad o contexto.",
+      "Repito frases o palabras que escuché (de películas, personas) fuera de contexto.",
+      "Mi ritmo, entonación o volumen al hablar no siempre es adecuado a la situación.",
+      "Interpreto las cosas al pie de la letra y no entiendo los sobreentendidos.",
+      "Tengo dificultades para seguir conversaciones en grupo.",
+      "Me desvío constantemente del tema principal cuando estoy hablando.",
+    ]
+  },
+  {
+    id: "G", title: "Relaciones Sociales", subtitle: "Cómo me vinculo con los demás",
+    scale: "freq",
+    questions: [
+      "Prefiero estar solo/a o hacer actividades en solitario que en grupo.",
+      "Tengo dificultades para hacer y mantener amistades significativas.",
+      "No entiendo las reglas no escritas de las interacciones sociales o los juegos grupales.",
+      "Me relaciono mejor con personas mucho mayores o mucho menores que yo.",
+      "Mis amistades están basadas principalmente en un interés común específico.",
+      "Siento una fatiga intensa después de interacciones sociales prolongadas.",
+    ]
+  },
+  {
+    id: "H", title: "Regulación Emocional", subtitle: "Cómo manejo mis emociones ante el mundo",
+    scale: "freq",
+    questions: [
+      "Tengo colapsos emocionales intensos cuando hay sobrecarga sensorial o frustración.",
+      "Me desconecto o me retiro cuando me siento demasiado abrumado/a.",
+      "Siento ansiedad elevada ante situaciones sociales o cambios en mis rutinas.",
+      "Tengo dificultades para identificar y nombrar mis propias emociones.",
+      "Me irrito o reacciono fuerte cuando interrumpen mis rutinas o actividades.",
+      "Me cuesta recuperarme emocionalmente después de contratiempos.",
+      "Siento ansiedad anticipatoria ante eventos futuros, aunque sean positivos.",
+    ]
+  },
+  {
+    id: "I", title: "Desarrollo e Historia", subtitle: "Señales tempranas y antecedentes",
+    scale: "yn",
+    questions: [
+      "De pequeño/a, tardé en hablar o presenté retraso en el desarrollo del lenguaje.",
+      "Perdí palabras que ya había aprendido (entre 1 y 2 años aproximadamente).",
+      "Tenía dificultades para seguir la mirada de un adulto hacia un objeto.",
+      "Rara vez señalaba con el dedo para mostrar cosas que me interesaban.",
+      "No respondía a mi nombre cuando me llamaban.",
+      "Presentaba sensibilidades sensoriales marcadas en la infancia.",
+      "Tenía movimientos repetitivos desde pequeño/a (aleteo, balanceo, giro).",
+      "Resistía intensamente los cambios en mis rutinas desde muy pequeño/a.",
+      "Tengo familiares diagnosticados con TEA, TDAH o rasgos autistas.",
+    ]
+  },
+];
+
+const SCALE_LABELS = {
+  freq: ["Nunca","A veces","Frecuente","Siempre"],
+  diff: ["Sin dificultad","Leve","Moderada","Severa"],
+  yn:   ["Sí","No"],
+};
+
+const INTERP = [
+  { max: 30,  level: "Muy Bajo",          color: "#4CAF50", bg: "#E8F5E9", desc: "No se identifican rasgos significativos del espectro autista en esta evaluación." },
+  { max: 65,  level: "Leve",              color: "#8BC34A", bg: "#F1F8E9", desc: "Presencia de rasgos sutiles. Puede corresponder a rasgos subclínicos o alta demanda adaptativa." },
+  { max: 110, level: "Moderado",          color: "#FF9800", bg: "#FFF3E0", desc: "Patrón consistente con rasgos del espectro. Se recomienda evaluación especializada." },
+  { max: 155, level: "Significativo",     color: "#F44336", bg: "#FFEBEE", desc: "Alta consistencia con TEA. Se requiere evaluación diagnóstica formal urgente." },
+  { max: 9999,level: "Muy Elevado",       color: "#B71C1C", bg: "#FFCDD2", desc: "Perfil altamente consistente con TEA con posible afectación marcada. Evaluación inmediata." },
+];
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let currentSection = 0;
+let answers = {}; // key: "A-0", value: 0-3 (or 1/0 for yn)
+let patientData = {};
+let selectedGender = '';
+let selectedInformant = 'Yo mismo/a';
+
+/* ═══════════════════════════════════════════
+   RADIO SELECTOR
+═══════════════════════════════════════════ */
+function selectRadio(groupId, el, value) {
+  document.querySelectorAll(`#${groupId} .radio-option`).forEach(o => {
+    o.classList.remove('selected');
+    o.querySelector('.radio-dot').style.cssText = '';
+  });
+  el.classList.add('selected');
+  el.querySelector('.radio-dot').style.cssText = 'background:var(--sage);border-color:var(--sage)';
+  if (groupId === 'genderGroup') selectedGender = value;
+  if (groupId === 'informantGroup') selectedInformant = value;
+}
+
+/* ═══════════════════════════════════════════
+   START
+═══════════════════════════════════════════ */
+function startQuestionnaire() {
+  const name = document.getElementById('patientName').value.trim();
+  const age  = document.getElementById('patientAge').value.trim();
+  if (!name || !age) {
+    document.getElementById('introError').style.display = 'block';
+    return;
+  }
+  patientData = { name, age, gender: selectedGender || 'No especificado', informant: selectedInformant, date: new Date().toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'}) };
+  document.getElementById('screenIntro').classList.remove('active');
+  document.getElementById('screenQuestions').classList.add('active');
+  document.getElementById('progressWrap').style.display = 'block';
+  buildProgressSteps();
+  renderSection();
+}
+
+/* ═══════════════════════════════════════════
+   PROGRESS
+═══════════════════════════════════════════ */
+function buildProgressSteps() {
+  const container = document.getElementById('progressSteps');
+  container.innerHTML = '';
+  SECTIONS.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot';
+    dot.id = `stepDot${i}`;
+    container.appendChild(dot);
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const pct = Math.round((currentSection / SECTIONS.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressLabel').textContent = `Sección ${currentSection + 1} de ${SECTIONS.length}`;
+  SECTIONS.forEach((_, i) => {
+    const dot = document.getElementById(`stepDot${i}`);
+    if (!dot) return;
+    dot.className = 'step-dot' + (i < currentSection ? ' done' : i === currentSection ? ' active' : '');
+  });
+}
+
+/* ═══════════════════════════════════════════
+   RENDER SECTION
+═══════════════════════════════════════════ */
+function renderSection() {
+  updateProgress();
+  const sec = SECTIONS[currentSection];
+  const card = document.getElementById('questionCard');
+  card.innerHTML = '';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'card-header';
+  header.innerHTML = `
+    <div class="section-num">Sección ${currentSection + 1} · ${sec.id}</div>
+    <div class="section-title">${sec.title}</div>
+    <div class="section-desc">${sec.subtitle}</div>`;
+  card.appendChild(header);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'card-body';
+
+  // Scale legend
+  if (sec.scale !== 'yn') {
+    const labels = SCALE_LABELS[sec.scale];
+    const colors = ['sc0','sc1','sc2','sc3'];
+    body.innerHTML += `<div class="scale-legend">${labels.map((l,i) => `<div class="scale-item"><span class="scale-chip ${colors[i]}">${i}</span>${l}</div>`).join('')}</div>`;
+  } else {
+    body.innerHTML += `<div class="scale-legend"><div class="scale-item" style="color:var(--muted);font-size:13px">Responde <strong>Sí</strong> o <strong>No</strong> según tu historia personal o la de la persona evaluada</div></div>`;
+  }
+
+  // Questions
+  sec.questions.forEach((q, qi) => {
+    const key = `${sec.id}-${qi}`;
+    if (sec.scale === 'yn') {
+      body.appendChild(buildYNItem(q, qi, key, sec.id));
+    } else {
+      body.appendChild(buildScaleItem(q, qi, key, sec.id, sec.scale));
+    }
+  });
+
+  // Nav
+  const nav = document.createElement('div');
+  nav.className = 'nav-row';
+  if (currentSection > 0) {
+    const prev = document.createElement('button');
+    prev.className = 'btn btn-ghost';
+    prev.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Anterior`;
+    prev.onclick = () => { currentSection--; renderSection(); window.scrollTo(0,0); };
+    nav.appendChild(prev);
+  } else {
+    nav.appendChild(document.createElement('span'));
+  }
+  const next = document.createElement('button');
+  next.className = 'btn btn-primary';
+  const isLast = currentSection === SECTIONS.length - 1;
+  next.innerHTML = isLast
+    ? `Ver resultados <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`
+    : `Siguiente <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+  next.onclick = () => advanceSection(isLast);
+  nav.appendChild(next);
+  body.appendChild(nav);
+
+  card.appendChild(body);
+
+  // Re-highlight already answered
+  const ansData = answers;
+  sec.questions.forEach((_, qi) => {
+    const key = `${sec.id}-${qi}`;
+    if (ansData[key] !== undefined) {
+      if (sec.scale === 'yn') {
+        highlightYN(key, ansData[key]);
+      } else {
+        highlightScale(key, ansData[key]);
+      }
+    }
+  });
+}
+
+function buildScaleItem(q, qi, key, secId, scale) {
+  const wrap = document.createElement('div');
+  wrap.className = 'q-item';
+  wrap.id = `qwrap-${key}`;
+  const labels = SCALE_LABELS[scale];
+  const scClasses = ['sel-0','sel-1','sel-2','sel-3'];
+  wrap.innerHTML = `
+    <span class="q-num">Ítem ${qi + 1}</span>
+    <div class="q-text">${q}</div>
+    <div class="scale-options">
+      ${labels.map((l,i) => `
+        <button class="scale-btn" id="sbtn-${key}-${i}" onclick="selectScale('${key}',${i},'${secId}')">
+          <span class="sc-val">${i}</span>
+          <span class="sc-label">${l}</span>
+        </button>`).join('')}
+    </div>`;
+  return wrap;
+}
+
+function buildYNItem(q, qi, key, secId) {
+  const wrap = document.createElement('div');
+  wrap.className = 'yn-item';
+  wrap.id = `qwrap-${key}`;
+  wrap.innerHTML = `
+    <div class="yn-text"><strong style="color:var(--mint);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px">Ítem ${qi+1}</strong>${q}</div>
+    <div class="yn-btns">
+      <button class="yn-btn" id="yn-${key}-1" onclick="selectYN('${key}',1,'${secId}')">Sí</button>
+      <button class="yn-btn" id="yn-${key}-0" onclick="selectYN('${key}',0,'${secId}')">No</button>
+    </div>`;
+  return wrap;
+}
+
+function selectScale(key, val, secId) {
+  answers[key] = val;
+  highlightScale(key, val);
+  document.getElementById(`qwrap-${key}`).classList.add('answered');
+}
+function highlightScale(key, val) {
+  for (let i = 0; i < 4; i++) {
+    const btn = document.getElementById(`sbtn-${key}-${i}`);
+    if (btn) btn.className = 'scale-btn' + (i === val ? ` sel-${i}` : '');
+  }
+}
+function selectYN(key, val, secId) {
+  answers[key] = val;
+  highlightYN(key, val);
+  document.getElementById(`qwrap-${key}`).classList.add('answered');
+}
+function highlightYN(key, val) {
+  const y = document.getElementById(`yn-${key}-1`);
+  const n = document.getElementById(`yn-${key}-0`);
+  if (y) y.className = 'yn-btn' + (val === 1 ? ' yes-sel' : '');
+  if (n) n.className = 'yn-btn' + (val === 0 ? ' no-sel' : '');
+}
+
+/* ═══════════════════════════════════════════
+   ADVANCE
+═══════════════════════════════════════════ */
+function advanceSection(isLast) {
+  const sec = SECTIONS[currentSection];
+  const unanswered = sec.questions.filter((_, qi) => answers[`${sec.id}-${qi}`] === undefined);
+  if (unanswered.length > 0) {
+    const warn = document.getElementById('unansweredWarn');
+    warn.classList.add('show');
+    // Highlight unanswered
+    sec.questions.forEach((_, qi) => {
+      const key = `${sec.id}-${qi}`;
+      if (answers[key] === undefined) {
+        const wrap = document.getElementById(`qwrap-${key}`);
+        if (wrap) { wrap.style.border = '1.5px solid var(--rose)'; wrap.style.background = 'rgba(192,97,90,0.05)'; }
+      }
+    });
+    setTimeout(() => warn.classList.remove('show'), 3000);
+    return;
+  }
+  document.getElementById('unansweredWarn').classList.remove('show');
+  if (isLast) {
+    showResults();
+  } else {
+    currentSection++;
+    renderSection();
+    window.scrollTo(0, 0);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   CALCULATE SCORES
+═══════════════════════════════════════════ */
+function calcScores() {
+  const sectionScores = {};
+  const maxScores = {};
+  SECTIONS.forEach(sec => {
+    let total = 0, max = 0;
+    sec.questions.forEach((_, qi) => {
+      const val = answers[`${sec.id}-${qi}`] ?? 0;
+      if (sec.scale === 'yn') {
+        total += val === 1 ? 3 : 0; // Sí = 3 points, No = 0
+        max += 3;
+      } else {
+        total += val;
+        max += 3;
+      }
+    });
+    sectionScores[sec.id] = total;
+    maxScores[sec.id] = max;
+  });
+  const total = Object.values(sectionScores).reduce((a,b) => a+b, 0);
+  const maxTotal = Object.values(maxScores).reduce((a,b) => a+b, 0);
+  return { sectionScores, maxScores, total, maxTotal };
+}
+
+function getInterp(score) {
+  return INTERP.find(i => score <= i.max) || INTERP[INTERP.length-1];
+}
+
+function getFlags() {
+  // Items answered with 3 (or Sí in yn sections)
+  const flags = [];
+  SECTIONS.forEach(sec => {
+    sec.questions.forEach((q, qi) => {
+      const key = `${sec.id}-${qi}`;
+      const val = answers[key];
+      if ((sec.scale !== 'yn' && val === 3) || (sec.scale === 'yn' && val === 1)) {
+        flags.push(`${sec.id}${qi+1}: ${q.substring(0,60)}${q.length>60?'...':''}`);
+      }
+    });
+  });
+  return flags;
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS SCREEN
+═══════════════════════════════════════════ */
+function showResults() {
+  document.getElementById('screenQuestions').classList.remove('active');
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('screenResults').classList.add('active');
+
+  const { sectionScores, maxScores, total, maxTotal } = calcScores();
+  const interp = getInterp(total);
+  const flags = getFlags();
+
+  const card = document.getElementById('resultsCard');
+
+  // Bar colors per section
+  const barColors = ['#3A7A6A','#7BBFAF','#C8813A','#1C4A3E','#6BAE8B','#B8A896','#5A8A7A','#C0615A','#8BAE9A'];
+
+  let sectionBarsHTML = SECTIONS.map((sec, i) => {
+    const sc = sectionScores[sec.id];
+    const mx = maxScores[sec.id];
+    const pct = Math.round((sc / mx) * 100);
+    return `<div class="sec-bar-item">
+      <div class="sec-bar-top">
+        <span class="sec-bar-name">${sec.id} — ${sec.title}</span>
+        <span class="sec-bar-val">${sc} / ${mx}</span>
+      </div>
+      <div class="sec-bar-track"><div class="sec-bar-fill" id="sbar-${sec.id}" style="width:0%;background:${barColors[i]}"></div></div>
+    </div>`;
+  }).join('');
+
+  let flagsHTML = flags.length > 0
+    ? flags.map(f => `<span class="flag-chip">${f}</span>`).join('')
+    : `<div class="no-flags">✓ No se identificaron ítems de máxima intensidad en esta evaluación.</div>`;
+
+  card.innerHTML = `
+    <div class="results-header">
+      <div class="result-circle">
+        <div class="result-score" id="animScore">0</div>
+        <div class="result-max">de ${maxTotal}</div>
+      </div>
+      <div class="result-title">Evaluación completada</div>
+      <div class="result-level" style="background:${interp.bg};color:${interp.color}">${interp.level}</div>
+      <p class="result-desc">${interp.desc}</p>
+    </div>
+    <div class="results-body">
+      <div class="section-bars">${sectionBarsHTML}</div>
+      <div class="flags-section">
+        <div class="flags-title">Ítems de mayor intensidad</div>
+        ${flagsHTML}
+      </div>
+      <div class="disclaimer-box">
+        <strong>Recordatorio:</strong> Estos resultados son orientativos y serán enviados a tu profesional de salud para su análisis. No reemplazan una evaluación clínica completa realizada por especialistas en TEA. Si tenés dudas, no dudes en consultar directamente con tu médico o psicólogo.
+      </div>
+      <div class="results-actions">
+        <button class="btn btn-whatsapp" onclick="sendWhatsApp(${total},${maxTotal})">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.998 2C6.473 2 2 6.473 2 11.998c0 1.972.576 3.808 1.568 5.352L2.01 22l4.754-1.546c1.498.9 3.243 1.421 5.103 1.422h.004c5.523 0 9.996-4.473 9.996-9.998 0-2.671-1.04-5.181-2.929-7.07A9.962 9.962 0 0011.998 2z"/></svg>
+          Enviar resultados por WhatsApp
+        </button>
+        <button class="btn btn-restart" onclick="location.reload()">Realizar nueva evaluación</button>
+      </div>
+    </div>`;
+
+  // Animate score counter
+  let n = 0;
+  const step = Math.ceil(total / 60);
+  const anim = setInterval(() => {
+    n = Math.min(n + step, total);
+    document.getElementById('animScore').textContent = n;
+    if (n >= total) clearInterval(anim);
+  }, 25);
+
+  // Animate bars
+  setTimeout(() => {
+    SECTIONS.forEach(sec => {
+      const el = document.getElementById(`sbar-${sec.id}`);
+      if (el) el.style.width = Math.round((sectionScores[sec.id] / maxScores[sec.id]) * 100) + '%';
+    });
+  }, 200);
+
+  window.scrollTo(0, 0);
+  window._lastScores = { sectionScores, maxScores, total, maxTotal, interp, flags };
+}
+
+/* ═══════════════════════════════════════════
+   WHATSAPP SEND
+═══════════════════════════════════════════ */
+function sendWhatsApp(total, maxTotal) {
+  const { sectionScores, maxScores, interp, flags } = window._lastScores;
+  const p = patientData;
+  const fecha = p.date;
+
+  let msg = `🧠 *CEEA — Evaluación del Espectro Autista*\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `👤 *Paciente:* ${p.name}\n`;
+  msg += `🎂 *Edad:* ${p.age} años\n`;
+  msg += `⚧ *Género:* ${p.gender}\n`;
+  msg += `👁 *Informante:* ${p.informant}\n`;
+  msg += `📅 *Fecha:* ${fecha}\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+  msg += `📊 *RESULTADOS POR SECCIÓN:*\n`;
+
+  SECTIONS.forEach(sec => {
+    const sc = sectionScores[sec.id];
+    const mx = maxScores[sec.id];
+    const pct = Math.round((sc / mx) * 100);
+    const bar = pct >= 75 ? '🔴' : pct >= 50 ? '🟠' : pct >= 25 ? '🟡' : '🟢';
+    msg += `${bar} *${sec.id} — ${sec.title}:* ${sc}/${mx} (${pct}%)\n`;
+  });
+
+  msg += `\n📈 *PUNTUACIÓN TOTAL:* ${total}/${maxTotal}\n`;
+  msg += `🎯 *Nivel indicativo:* ${interp.level}\n`;
+  msg += `📝 *Interpretación:* ${interp.desc}\n\n`;
+
+  if (flags.length > 0) {
+    msg += `⚠ *Ítems de máxima intensidad (${flags.length}):*\n`;
+    flags.slice(0, 15).forEach(f => msg += `  • ${f}\n`);
+    if (flags.length > 15) msg += `  ... y ${flags.length - 15} más\n`;
+  } else {
+    msg += `✅ *Sin ítems de máxima intensidad.*\n`;
+  }
+
+  msg += `\n━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `⚕ *Completado mediante formulario web CEEA*\n`;
+  msg += `_Este cuestionario es orientativo. Solo un especialista puede realizar diagnóstico formal._`;
+
+  const phone = '543764788332';
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+</script>
+</body>
+</html>
